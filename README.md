@@ -4,12 +4,14 @@ A full-stack cab booking application built with React.js, Node.js, Express.js, a
 
 ## 🏗️ Project Structure
 
+
 ```
 cab-booking-system/
 ├── frontend/           # React.js application
 ├── backend/           # Node.js + Express.js server
 └── README.md          # Project documentation
 ```
+
 
 ## 🚀 Features
 
@@ -37,6 +39,9 @@ cab-booking-system/
 
 ### Backend Setup
 1. Navigate to backend directory:
+   ```bash
+   cd backend
+
    ```bash
    cd backend
    ```
@@ -82,3 +87,6 @@ REACT_APP_SOCKET_URL=http://localhost:5000
 
 ## 📝 License
 MIT 
+=======
+# Cab-Booking-System
+>>>>>>> 76d589461927c7651bd373e45d1407eeed212256
