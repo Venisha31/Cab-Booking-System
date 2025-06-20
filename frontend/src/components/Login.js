@@ -1,129 +1,142 @@
-import React, { useState, useContext } from 'react';
+import { Grid, TextField, Typography, Button, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  Paper
-} from '@mui/material';
+import { useState } from 'react';
+import loginImage from '../../assets/hero-car.png';
 
-const Login = ({ onSwitch }) => {
+const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
+  const handleLogin = async () => {
     try {
-      console.log('Attempting login with email:', email);
-      const result = await login(email, password);
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (result.success) {
-        console.log('Login successful:', result.user);
-        const dashboardPath = result.user.role === 'driver' ? '/driver/DriverDashboard' : '/user/UserDashboard';
-        navigate(dashboardPath);
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        const userRole = data.user.role;
+        if (userRole === 'user') {
+          navigate('/user/UserDashboard');
+        } else if (userRole === 'driver') {
+          navigate('/driver/DriverDashboard');
+        } else {
+          alert('Invalid role');
+        }
       } else {
-        console.error('Login failed:', result.message);
-        setError(result.message || 'An error occurred during login');
+        alert(data.message || 'Login failed');
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setLoading(false);
+      console.error(err);
+      alert('Something went wrong!');
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography component="h1" variant="h5">
-            Sign In
+    <Grid container sx={{ minHeight: '100vh' }}>
+      {/* Left side form */}
+      <Grid item xs={12} md={6} display="flex" alignItems="center" justifyContent="center">
+        <Paper elevation={3} sx={{ p: 4, width: '80%', maxWidth: 400, borderRadius: 4 }}>
+          <Typography variant="h4" fontWeight="bold" mb={2}>
+            Welcome Back 👋
+          </Typography>
+          <Typography variant="body2" mb={3} color="text.secondary">
+            Login to your Cab Account
           </Typography>
 
-          {error && (
-            <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
-              {error}
-            </Alert>
-          )}
+          <TextField
+            fullWidth
+            label="Email"
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              '& label.Mui-focused': {
+                color: 'black', // Yellow label on focus
+              },
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                  borderColor: 'black', // Yellow border on focus
+                },
+              },
+            }}
+          />
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <TextField
+            fullWidth
+            label="Password"
+            type="password"
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              '& label.Mui-focused': {
+                color: 'black', // Yellow label on focus
+              },
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                  borderColor: 'black', // Yellow border on focus
+                },
+              },
+            }}
+          />
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ mt: 3, bgcolor: '#feb800', color: '#000', fontWeight: 'bold' }}
+            onClick={handleLogin}
+          >
+            Login
+          </Button>
+
+          {/* Register link below the form */}
+          <Typography variant="body2" mt={2} textAlign="center">
+            Don’t have an account?{' '}
             <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
+              variant="text"
+              onClick={() => navigate('/register')}
+              sx={{ color: '#feb800', textTransform: 'none', fontWeight: 'bold' }}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              Register
             </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2">
-                Don’t have an account?{' '}
-                <span
-                  onClick={onSwitch}
-                  style={{ color: '#1976d2', cursor: 'pointer' }}
-                >
-                  Register
-                </span>
-              </Typography>
-            </Box>
-          </Box>
+          </Typography>
         </Paper>
-      </Box>
-    </Container>
+      </Grid>
+
+      {/* Right side image */}
+     <Grid
+             item
+             xs={false}
+             md={6}
+             sx={{
+               background: 'linear-gradient(135deg, #000 30%, #feb800 100%)',
+               clipPath: 'polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+             }}
+           >
+             <img
+               src={loginImage}
+               alt="Register Visual"
+               style={{
+                 width: '90%',
+                 height: 'auto',
+                 objectFit: 'contain',
+               }}
+             />
+           </Grid>
+    </Grid>
   );
 };
 
-export default Login; 
+export default Login;

@@ -7,6 +7,7 @@ const { Server } = require('socket.io');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const driverRoutes = require('./routes/booking.routes');
+const adminRoutes = require('./routes/admin.routes'); // or `import` if you're using ES Modules
 
 const app = express();
 const httpServer = createServer(app);
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookings', driverRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Socket.io connection handling
 io.on('connection', (socket) => {

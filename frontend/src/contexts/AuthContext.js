@@ -17,22 +17,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('token'));
+
 
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem('token');
-      if (token) {
+      const userData = localStorage.getItem('user');
+
+      if (token && userData) {
         try {
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const userData = JSON.parse(localStorage.getItem('user'));
-          setUser(userData);
+          setUser(JSON.parse(userData));
           setIsAuthenticated(true);
+          setToken(token); // ✅ add this
         } catch (error) {
-          console.error('Error initializing auth:', error);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
         }
       }
+
+
       setLoading(false);
     };
 
@@ -41,11 +46,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      // ✅ Clear previous login session
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+      setIsAuthenticated(false);
+
       console.log('Attempting login with:', { email });
-      const response = await api.post('/auth/login', {
-        email,
-        password
-      });
+      const response = await api.post('/auth/login', { email, password });
 
       console.log('Login response:', response.data);
 
@@ -54,20 +62,20 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
+
         setUser(user);
         setIsAuthenticated(true);
-        return { 
-          success: true,
-          user: user
-        };
+
+        return { success: true, user };
       } else {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
       console.error('Login error:', error.response || error);
-      const errorMessage = error.response?.data?.message || 
-                         (error.response?.status === 401 ? 'Invalid email or password' : 'An error occurred during login');
+      const errorMessage =
+        error.response?.data?.message ||
+        (error.response?.status === 401 ? 'Invalid email or password' : 'An error occurred during login');
+
       return {
         success: false,
         message: errorMessage
@@ -79,9 +87,9 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('Attempting registration with:', { ...userData, password: '***' });
       const response = await api.post('/auth/register', userData);
-      
+
       console.log('Registration response:', response.data);
-      
+
       if (response.data.success) {
         return { success: true };
       } else {
@@ -106,28 +114,15 @@ export const AuthProvider = ({ children }) => {
 
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated,
-        login,
-        register,
-        logout
-      }}
-    >
+   <AuthContext.Provider value={{ user, token, isAuthenticated, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

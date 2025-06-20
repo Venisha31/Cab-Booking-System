@@ -1,47 +1,32 @@
-import { Box, Grid, TextField, Typography, Button, Paper } from '@mui/material';
+import { Grid, TextField, Typography, Button, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import loginImage from '../../assets/hero-car.png';
+import { useAuth } from '../../hooks/useAuth';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user'); // default role
 
   const handleLogin = async () => {
-    try {
-      // Send login data to backend
-      const res = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        // Save token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-
-        // Navigate based on role
-        const userRole = data.user.role;
-        if (userRole === 'user') {
-          navigate('/user/UserDashboard');
-        } else if (userRole === 'driver') {
-          navigate('/driver/DriverDashboard');
-        } else {
-          alert('Invalid role');
-        }
+    const result = await login(email, password);
+    if (result.success) {
+      const loggedInUser = result.user;
+      console.log('Logged in user role:', loggedInUser.role);
+      if (loggedInUser.role === 'user') {
+        navigate('/user/dashboard');
+      } else if (loggedInUser.role === 'driver') {
+        navigate('/driver/dashboard');
+      } else if (loggedInUser.role === 'admin') {
+        navigate('/Admin/dashboard'); // ✅ make sure this route exists
       } else {
-        alert(data.message || 'Login failed');
+        alert('Invalid role');
       }
-    } catch (err) {
-      console.error(err);
-      alert('Something went wrong!');
+    } else {
+      alert(result.message || 'Login failed');
     }
   };
 
@@ -63,7 +48,18 @@ const Login = () => {
             margin="normal"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              '& label.Mui-focused': {
+                color: 'black',
+              },
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                  borderColor: 'black',
+                },
+              },
+            }}
           />
+
           <TextField
             fullWidth
             label="Password"
@@ -71,6 +67,16 @@ const Login = () => {
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              '& label.Mui-focused': {
+                color: 'black',
+              },
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused fieldset': {
+                  borderColor: 'black',
+                },
+              },
+            }}
           />
 
           <Button
@@ -81,6 +87,17 @@ const Login = () => {
           >
             Login
           </Button>
+
+          <Typography variant="body2" mt={2} textAlign="center">
+            Don’t have an account?{' '}
+            <Button
+              variant="text"
+              onClick={() => navigate('/register')}
+              sx={{ color: '#feb800', textTransform: 'none', fontWeight: 'bold' }}
+            >
+              Register
+            </Button>
+          </Typography>
         </Paper>
       </Grid>
 
@@ -90,13 +107,23 @@ const Login = () => {
         xs={false}
         md={6}
         sx={{
-          backgroundImage: `url(${loginImage})`,
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: '#000',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          background: 'linear-gradient(135deg, #000 30%, #feb800 100%)',
+          clipPath: 'polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-      />
+      >
+        <img
+          src={loginImage}
+          alt="Register Visual"
+          style={{
+            width: '90%',
+            height: 'auto',
+            objectFit: 'contain',
+          }}
+        />
+      </Grid>
     </Grid>
   );
 };

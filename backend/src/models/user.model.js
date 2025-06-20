@@ -48,10 +48,10 @@ const userSchema = new mongoose.Schema({
     select: false
   },
   role: {
-    type: String,
-    enum: ['user', 'driver'],
-    default: 'user'
-  },
+  type: String,
+  enum: ['user', 'driver', 'admin'],
+  default: 'user',
+},
   vehicle: {
     type: vehicleSchema,
     required: function() {

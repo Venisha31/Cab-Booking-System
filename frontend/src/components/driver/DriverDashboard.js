@@ -1,36 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Grid, 
-  Card,
-  CardContent,
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Typography,
   Button,
+  Grid,
+  Paper,
   CircularProgress,
   Alert
 } from '@mui/material';
-import { LocationOn } from '@mui/icons-material';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../utils/axios';
+import { useNavigate } from 'react-router-dom';
 
 const DriverDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate(); // ✅ FIXED: defined navigate
+  const [selectedTab, setSelectedTab] = useState('rideRequests');
   const [activeRide, setActiveRide] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchActiveRide();
-  }, []);
+    if (selectedTab === 'rideRequests') {
+      fetchActiveRide();
+    }
+  }, [selectedTab]);
 
   const fetchActiveRide = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/bookings/driver-active');
-      setActiveRide(response.data.data);
+      const res = await api.get('/api/bookings/driver-active');
+      setActiveRide(res.data.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error fetching active ride');
+      setError(err.response?.data?.message || 'Failed to fetch active ride');
     } finally {
       setLoading(false);
     }
@@ -38,9 +40,7 @@ const DriverDashboard = () => {
 
   const handleStatusUpdate = async (status) => {
     try {
-      await api.put(`/api/bookings/${activeRide._id}/status`, {
-        status
-      });
+      await api.put(`/api/bookings/${activeRide._id}/status`, { status });
       fetchActiveRide();
     } catch (err) {
       setError(err.response?.data?.message || 'Error updating ride status');
@@ -48,105 +48,120 @@ const DriverDashboard = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        Welcome, {user.name}!
-      </Typography>
+    <Box sx={{ backgroundColor: '#121212', minHeight: '100vh', color: '#e0e0e0', fontFamily: 'Poppins, sans-serif' }}>
+      <Grid container>
+        {/* Sidebar */}
+        <Grid item xs={12} md={3} sx={{ backgroundColor: '#1e1e1e', minHeight: '100vh', p: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fbc02d', mb: 3 }}>🧑‍✈️ Driver Panel</Typography>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
+          <Typography
+            sx={{
+              mb: 2,
+              cursor: 'pointer',
+              color: window.location.pathname === '/driver/ride-requests' ? '#00c6ff' : '#fff',
+              '&:hover': { color: '#00c6ff' },
+            }}
+            onClick={() => navigate('/driver/ride-requests')}
+          >
+            🚗 Ride Requests
+          </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Driver Profile
-            </Typography>
-            <Typography>Email: {user.email}</Typography>
-            <Typography>Phone: {user.phoneNumber}</Typography>
-            <Typography>Role: {user.role}</Typography>
-          </Paper>
+          <Typography
+            sx={{
+              mb: 2,
+              cursor: 'pointer',
+              color: selectedTab === 'profile' ? '#00c6ff' : '#fff',
+              '&:hover': { color: '#00c6ff' },
+            }}
+            onClick={() => setSelectedTab('profile')}
+          >
+            👤 Profile
+          </Typography>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Active Ride
-            </Typography>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-                <CircularProgress />
-              </Box>
-            ) : activeRide ? (
-              <Card>
-                <CardContent>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" color="text.secondary">
-                      <LocationOn /> Pickup: {activeRide.pickup.address}
-                    </Typography>
-                    <Typography variant="subtitle1" color="text.secondary">
-                      <LocationOn /> Dropoff: {activeRide.dropoff.address}
-                    </Typography>
+        {/* Main Content */}
+        <Grid item xs={12} md={9}>
+          <Box sx={{ p: 4 }}>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#fbc02d', mb: 3 }}>
+  Welcome, {user?.name || 'Driver'} 👋
+</Typography>
+
+            {selectedTab === 'rideRequests' && (
+              <Paper elevation={3} sx={{
+                p: 3,
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: 4,
+                color: '#ccc',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#fbc02d', mb: 2 }}>
+                  🚘 Active Ride
+                </Typography>
+
+                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+                {loading ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <CircularProgress />
                   </Box>
-                  <Typography variant="h6" gutterBottom>
-                    Fare: ₹{activeRide.fare}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Status: {activeRide.status.split('_').map(word => 
-                      word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' ')}
-                  </Typography>
-                  <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                    {activeRide.status === 'driver_assigned' && (
-                      <Button 
-                        variant="contained" 
-                        color="primary"
-                        onClick={() => handleStatusUpdate('on_the_way')}
-                      >
-                        Start Journey
+                ) : activeRide ? (
+                  <>
+                    <Typography>Pickup: {activeRide.pickup.address}</Typography>
+                    <Typography>Dropoff: {activeRide.dropoff.address}</Typography>
+                    <Typography>Fare: ₹{activeRide.fare}</Typography>
+                    <Typography>Status: {activeRide.status}</Typography>
+
+                    <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                      {activeRide.status === 'driver_assigned' && (
+                        <Button variant="contained" onClick={() => handleStatusUpdate('on_the_way')}>
+                          Start Journey
+                        </Button>
+                      )}
+                      {activeRide.status === 'on_the_way' && (
+                        <Button variant="contained" onClick={() => handleStatusUpdate('picked_up')}>
+                          Picked Up
+                        </Button>
+                      )}
+                      {activeRide.status === 'picked_up' && (
+                        <Button variant="contained" onClick={() => handleStatusUpdate('completed')}>
+                          Complete Ride
+                        </Button>
+                      )}
+                      <Button variant="outlined" color="error" onClick={() => handleStatusUpdate('cancelled')}>
+                        Cancel Ride
                       </Button>
-                    )}
-                    {activeRide.status === 'on_the_way' && (
-                      <Button 
-                        variant="contained" 
-                        color="primary"
-                        onClick={() => handleStatusUpdate('picked_up')}
-                      >
-                        Picked Up
-                      </Button>
-                    )}
-                    {activeRide.status === 'picked_up' && (
-                      <Button 
-                        variant="contained" 
-                        color="primary"
-                        onClick={() => handleStatusUpdate('completed')}
-                      >
-                        Complete Ride
-                      </Button>
-                    )}
-                    <Button 
-                      variant="outlined" 
-                      color="error"
-                      onClick={() => handleStatusUpdate('cancelled')}
-                    >
-                      Cancel Ride
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
-            ) : (
-              <Typography color="textSecondary">
-                No active rides at the moment.
-              </Typography>
+                    </Box>
+                  </>
+                ) : (
+                  <Typography sx={{ color: '#aaa' }}>No active ride at the moment.</Typography>
+                )}
+              </Paper>
             )}
-          </Paper>
+
+            {selectedTab === 'profile' && (
+              <Paper elevation={3} sx={{
+                p: 3,
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: 4,
+                color: '#ccc',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#fbc02d', mb: 2 }}>
+                  👤 Profile Details
+                </Typography>
+                <Typography>Name: {user?.name}</Typography>
+                <Typography>Email: {user?.email}</Typography>
+                <Typography>Phone: {user?.phoneNumber}</Typography>
+                <Typography>Role: {user?.role}</Typography>
+              </Paper>
+            )}
+          </Box>
         </Grid>
       </Grid>
     </Box>
   );
 };
 
-export default DriverDashboard; 
+export default DriverDashboard;

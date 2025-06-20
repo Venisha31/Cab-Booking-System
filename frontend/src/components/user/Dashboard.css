@@ -1,0 +1,110 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-items {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.glassy {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.main-section {
+  display: flex;
+  height: 70vh;
+}
+
+.map-section {
+  flex: 2;
+  height: 100%;
+}
+
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.ride-capsule {
+  flex: 1;
+  padding: 2rem;
+  margin: 1rem;
+  height: fit-content;
+  align-self: center;
+}
+
+.ride-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.action-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #00bfa6;
+  color: white;
+  font-weight: bold;
+}
+
+.cancel {
+  background: #ff5252;
+}
+
+.sos {
+  background: #ffc107;
+}
+
+.carousel {
+  padding: 1rem 2rem;
+}
+
+.scroll-cards {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+.card {
+  min-width: 200px;
+  padding: 1rem;
+  border-radius: 12px;
+  flex-shrink: 0;
+}

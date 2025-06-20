@@ -1,59 +1,102 @@
-// src/components/user/HomePage.tsx
 import { Box, Button, Container, Typography, AppBar, Toolbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import heroCar from '../../assets/hero-car.png';
+import { motion } from 'framer-motion';
+import heroCar from '../../assets/hero-car.png'; // your image
 
 const HomePage = () => {
   const navigate = useNavigate();
 
+  const handleBookNow = () => {
+    alert('Please login first.');
+    navigate('/login');
+  };
+
   return (
     <>
-      {/* Navbar */}
-      <AppBar position="static" sx={{ bgcolor: '#000' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h6" fontWeight="bold">CabXpress</Typography>
+      {/* Header */}
+      <AppBar position="static" sx={{ bgcolor: '#000', boxShadow: 'none' }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: 4 }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ color: '#fff' }}>
+            CabXpress
+          </Typography>
           <Box>
-            <Button onClick={() => navigate('/login')} sx={{ color: '#fff' }}>Login</Button>
-            <Button onClick={() => navigate('/register')} sx={{ color: '#fff' }}>Register</Button>
+            <Button onClick={() => navigate('/login')} sx={{ color: '#fff', fontWeight: 'bold' }}>
+              Login
+            </Button>
+            <Button onClick={() => navigate('/register')} sx={{ color: '#fff', fontWeight: 'bold' }}>
+              Register
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
 
       {/* Hero Section */}
-      <Box sx={{ position: 'relative', bgcolor: '#000', color: '#fff', minHeight: '90vh', display: 'flex', alignItems: 'center' }}>
-        <Container sx={{ zIndex: 2 }}>
-          <Typography variant="h3" fontWeight="bold" mb={2}>
-            Book Your Ride. Anytime. Anywhere.
-          </Typography>
-          <Typography variant="h6" mb={4}>
-            Trusted cab service at your fingertips.
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{ bgcolor: '#feb800', color: '#000', fontWeight: 'bold' }}
-            onClick={() => navigate('/book-ride')}
+      <Box sx={{ display: 'flex', minHeight: '90vh', bgcolor: '#000', color: '#fff' }}>
+        {/* Left Content */}
+        <Container
+          maxWidth="md"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            zIndex: 2,
+            px: { xs: 3, md: 10 },
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
           >
-            Book Now
-          </Button>
+            <Typography variant="h3" fontWeight="bold" mb={2}>
+              Book Your Ride. Anytime. Anywhere.
+            </Typography>
+            <Typography variant="h6" mb={4} color="#ccc">
+              Safe, Fast and Reliable Cab Service.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={handleBookNow}
+              sx={{
+                bgcolor: '#feb800',
+                color: '#000',
+                fontWeight: 'bold',
+                px: 4,
+                py: 1.5,
+                borderRadius: 2,
+              }}
+            >
+              Book Now
+            </Button>
+          </motion.div>
         </Container>
 
-        {/* Triangle + Car Image */}
+        {/* Right Side Illustration */}
         <Box
           sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
             width: '50%',
-            height: '100%',
-            clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)',
             backgroundColor: '#feb800',
+            clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1,
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          <img src={heroCar} alt="Hero Car" style={{ maxWidth: '80%', height: 'auto' }} />
+          <motion.img
+            src={heroCar}
+            alt="Hero Car"
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1.2 }}
+            style={{
+              maxWidth: '80%',
+              height: 'auto',
+              zIndex: 2,
+              position: 'relative',
+            }}
+          />
         </Box>
       </Box>
     </>
