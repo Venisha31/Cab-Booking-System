@@ -81,8 +81,8 @@ JWT_SECRET=your_jwt_secret
 
 ### Frontend (.env)
 ```
-REACT_APP_API_URL=https://cab-booking-system-2lyv.onrender.com
-REACT_APP_SOCKET_URL=https://cab-booking-system-2lyv.onrender.com
+REACT_APP_API_URL=https://cab-booking-system-csfj.onrender.com
+REACT_APP_SOCKET_URL=https://cab-booking-system-csfj.onrender.com
 ```
 
 ## 📝 License
