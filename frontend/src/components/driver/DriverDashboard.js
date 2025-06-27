@@ -14,22 +14,25 @@ import { useNavigate } from 'react-router-dom';
 
 const DriverDashboard = () => {
   const { user } = useAuth();
-  const navigate = useNavigate(); // ✅ FIXED: defined navigate
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState('rideRequests');
   const [activeRide, setActiveRide] = useState(null);
+  const [allRides, setAllRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (selectedTab === 'rideRequests') {
       fetchActiveRide();
+    } else if (selectedTab === 'myRides') {
+      fetchAllRides();
     }
   }, [selectedTab]);
 
   const fetchActiveRide = async () => {
     try {
       setLoading(true);
-      const res = await api.get('https://cab-booking-system-csfj.onrender.com/api/bookings/driver-active');
+      const res = await api.get('/api/bookings/driver-active');
       setActiveRide(res.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch active ride');
@@ -38,9 +41,21 @@ const DriverDashboard = () => {
     }
   };
 
+  const fetchAllRides = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/api/bookings/driver-bookings');
+      setAllRides(res.data.data || []);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch rides');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleStatusUpdate = async (status) => {
     try {
-      await api.put(`https://cab-booking-system-csfj.onrender.com/api/bookings/${activeRide._id}/status`, { status });
+      await api.put(`/api/bookings/${activeRide._id}/status`, { status });
       fetchActiveRide();
     } catch (err) {
       setError(err.response?.data?.message || 'Error updating ride status');
@@ -58,12 +73,24 @@ const DriverDashboard = () => {
             sx={{
               mb: 2,
               cursor: 'pointer',
-              color: window.location.pathname === '/driver/ride-requests' ? '#00c6ff' : '#fff',
+              color: selectedTab === 'rideRequests' ? '#00c6ff' : '#fff',
               '&:hover': { color: '#00c6ff' },
             }}
-            onClick={() => navigate('/driver/ride-requests')}
+            onClick={() => setSelectedTab('rideRequests')}
           >
             🚗 Ride Requests
+          </Typography>
+
+          <Typography
+            sx={{
+              mb: 2,
+              cursor: 'pointer',
+              color: selectedTab === 'myRides' ? '#00c6ff' : '#fff',
+              '&:hover': { color: '#00c6ff' },
+            }}
+            onClick={() => setSelectedTab('myRides')}
+          >
+            📘 My Rides
           </Typography>
 
           <Typography
@@ -83,8 +110,8 @@ const DriverDashboard = () => {
         <Grid item xs={12} md={9}>
           <Box sx={{ p: 4 }}>
             <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#fbc02d', mb: 3 }}>
-  Welcome, {user?.name || 'Driver'} 👋
-</Typography>
+              Welcome, {user?.name || 'Driver'} 👋
+            </Typography>
 
             {selectedTab === 'rideRequests' && (
               <Paper elevation={3} sx={{
@@ -135,6 +162,41 @@ const DriverDashboard = () => {
                   </>
                 ) : (
                   <Typography sx={{ color: '#aaa' }}>No active ride at the moment.</Typography>
+                )}
+              </Paper>
+            )}
+
+            {selectedTab === 'myRides' && (
+              <Paper elevation={3} sx={{
+                p: 3,
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: 4,
+                color: '#ccc',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#fbc02d', mb: 2 }}>
+                  📘 All Assigned Rides
+                </Typography>
+
+                {loading ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <CircularProgress />
+                  </Box>
+                ) : allRides.length === 0 ? (
+                  <Typography>No rides assigned yet.</Typography>
+                ) : (
+                  allRides.map((ride, index) => (
+                    <Paper key={index} sx={{ p: 2, mb: 2, backgroundColor: '#1e1e1e' }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#fff' }}>
+                        {ride.pickup?.address || 'Unknown'} → {ride.dropoff?.address || 'Unknown'}
+                      </Typography>
+                      <Typography>Status: {ride.status}</Typography>
+                      <Typography>Fare: ₹{ride.fare}</Typography>
+                      <Typography>User: {ride.user?.name || 'N/A'} ({ride.user?.phoneNumber || 'N/A'})</Typography>
+                      <Typography>Date: {new Date(ride.createdAt).toLocaleString()}</Typography>
+                    </Paper>
+                  ))
                 )}
               </Paper>
             )}
