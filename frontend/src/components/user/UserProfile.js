@@ -10,7 +10,7 @@ const UserProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await axios.put('/api/users/update-profile', formData, {
+      const res = await axios.put('https://cab-booking-system-csfj.onrender.com/api/users/update-profile', formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       alert('Profile updated');

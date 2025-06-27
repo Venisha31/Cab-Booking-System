@@ -29,7 +29,7 @@ const DriverDashboard = () => {
   const fetchActiveRide = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/api/bookings/driver-active');
+      const res = await api.get('https://cab-booking-system-csfj.onrender.com/api/bookings/driver-active');
       setActiveRide(res.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch active ride');
@@ -40,7 +40,7 @@ const DriverDashboard = () => {
 
   const handleStatusUpdate = async (status) => {
     try {
-      await api.put(`/api/bookings/${activeRide._id}/status`, { status });
+      await api.put(`https://cab-booking-system-csfj.onrender.com/api/bookings/${activeRide._id}/status`, { status });
       fetchActiveRide();
     } catch (err) {
       setError(err.response?.data?.message || 'Error updating ride status');

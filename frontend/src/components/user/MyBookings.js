@@ -7,7 +7,7 @@ const MyBookings = () => {
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const res = await axios.get('/api/bookings/user-bookings', {
+      const res = await axios.get('https://cab-booking-system-csfj.onrender.com/api/bookings/user-bookings', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setBookings(res.data.data || []);

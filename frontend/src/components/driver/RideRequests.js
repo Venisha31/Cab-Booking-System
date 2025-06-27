@@ -57,11 +57,11 @@ const RideRequests = () => {
       setError('');
 
       // Fetch active ride if any
-      const activeResponse = await api.get('/api/bookings/driver-active');
+      const activeResponse = await api.get('https://cab-booking-system-csfj.onrender.com/api/bookings/driver-active');
       setActiveRide(activeResponse.data.data);
 
       // Fetch pending requests
-      const requestsResponse = await api.get('/api/bookings/driver-requests');
+      const requestsResponse = await api.get('https://cab-booking-system-csfj.onrender.com/api/bookings/driver-requests');
       setRideRequests(requestsResponse.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Error fetching ride data');
@@ -73,7 +73,7 @@ const RideRequests = () => {
   const handleAccept = async (requestId) => {
     try {
       setLoading(true);
-      const response = await api.put(`/api/bookings/${requestId}/accept`);
+      const response = await api.put(`https://cab-booking-system-csfj.onrender.com/api/bookings/${requestId}/accept`);
       setActiveRide(response.data.data);
       setRideRequests(prev => prev.filter(req => req._id !== requestId));
       setError('');
@@ -87,7 +87,7 @@ const RideRequests = () => {
   const handleReject = async (requestId) => {
     try {
       setLoading(true);
-      await api.put(`/api/bookings/${requestId}/reject`);
+      await api.put(`https://cab-booking-system-csfj.onrender.com/api/bookings/${requestId}/reject`);
       setRideRequests(prev => prev.filter(req => req._id !== requestId));
       setError('');
     } catch (err) {
@@ -100,7 +100,7 @@ const RideRequests = () => {
   const handleStatusUpdate = async () => {
     try {
       setLoading(true);
-      const response = await api.put(`/api/bookings/${activeRide._id}/status`, {
+      const response = await api.put(`https://cab-booking-system-csfj.onrender.com/api/bookings/${activeRide._id}/status`, {
         status: selectedStatus
       });
       
