@@ -71,7 +71,7 @@ function App() {
           <Route path="/driver" element={<PrivateRoute role="driver"><Layout /></PrivateRoute>}>
             <Route path="dashboard" element={<DriverDashboard />} />
             <Route path="ride-requests" element={<RideRequests />} />
-            <Route path="/driver/my-rides" element={<DriverBookings />} />
+            <Route path="my-rides" element={<DriverBookings />} />
           </Route>
 
           {/* Admin Protected Routes */}
