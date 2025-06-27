@@ -19,6 +19,7 @@ import UserProfile from './components/user/UserProfile';
 // Driver Components
 import DriverDashboard from './components/driver/DriverDashboard';
 import RideRequests from './components/driver/RideRequests';
+import DriverBookings from './components/driver/DriverBookings'
 
 // Admin Components
 import AdminDashboard from './components/Admin/AdminDashboard';
