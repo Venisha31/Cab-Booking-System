@@ -74,7 +74,7 @@ const DriverDashboard = () => {
               mb: 2,
               cursor: 'pointer',
               color: selectedTab === 'rideRequests' ? '#00c6ff' : '#fff',
-              '&:hover': { color: '#00c6ff' },
+              '&:hover': { color: '#fbc02d' },
             }}
             onClick={() => setSelectedTab('rideRequests')}
           >
@@ -86,7 +86,7 @@ const DriverDashboard = () => {
               mb: 2,
               cursor: 'pointer',
               color: selectedTab === 'myRides' ? '#00c6ff' : '#fff',
-              '&:hover': { color: '#00c6ff' },
+              '&:hover': { color: '#fbc02d' },
             }}
             onClick={() => setSelectedTab('myRides')}
           >
@@ -98,7 +98,7 @@ const DriverDashboard = () => {
               mb: 2,
               cursor: 'pointer',
               color: selectedTab === 'profile' ? '#00c6ff' : '#fff',
-              '&:hover': { color: '#00c6ff' },
+              '&:hover': { color: '#fbc02d' },
             }}
             onClick={() => setSelectedTab('profile')}
           >
