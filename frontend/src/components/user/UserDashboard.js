@@ -20,7 +20,7 @@ const UserDashboard = () => {
 
     const fetchPastRides = async () => {
       try {
-        const response = await axios.get('/api/bookings/user-bookings', {
+        const response = await axios.get('https://cab-booking-system-csfj.onrender.com/api/bookings/user-bookings', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -33,7 +33,7 @@ const UserDashboard = () => {
 
     const fetchActiveRide = async () => {
       try {
-        const response = await axios.get('/api/bookings/user-active', {
+        const response = await axios.get('https://cab-booking-system-csfj.onrender.com/api/bookings/user-active', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
