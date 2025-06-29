@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'http://localhost:5000/api/admin' });
+const API = axios.create({ baseURL:  `${process.env.REACT_APP_API_URL}/api/admin` });
 
 export const fetchStats = (token) =>
   API.get('/stats', {

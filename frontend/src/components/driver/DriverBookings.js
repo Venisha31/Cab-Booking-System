@@ -14,6 +14,8 @@ import {
 import axios from 'axios';
 
 const DriverBookings = () => {
+  console.log("✅ DriverBookings TABLE VERSION rendering");
+
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
 
