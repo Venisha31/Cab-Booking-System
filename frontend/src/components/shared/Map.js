@@ -1,9 +1,16 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  useMap
+} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Fix for default marker icons
+// Fix for default Leaflet icons (optional fallback)
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -11,38 +18,55 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-// Custom icons for different markers
-const createCustomIcon = (iconUrl) => new L.Icon({
-  iconUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-  shadowSize: [41, 41]
+// ✅ Custom online icons (no need to store locally)
+const pickupIcon = new L.Icon({
+  iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32]
 });
 
-const Map = ({ 
-  center, 
-  markers = [], 
-  route = null, 
-  zoom = 13, 
-  height = '400px',
-  driverLocation = null 
-}) => {
-  const driverIcon = createCustomIcon('/icons/car-icon.png');
-  const pickupIcon = createCustomIcon('/icons/pickup-icon.png');
-  const dropoffIcon = createCustomIcon('/icons/dropoff-icon.png');
+const dropoffIcon = new L.Icon({
+  iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32]
+});
 
+const driverIcon = new L.Icon({
+  iconUrl: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32]
+});
+
+// ✅ Auto-zoom to fit all markers
+const AutoFitBounds = ({ markers }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (markers.length > 0) {
+      const bounds = L.latLngBounds(markers.map(m => m.position));
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [markers, map]);
+
+  return null;
+};
+
+const Map = ({
+  center,
+  markers = [],
+  route = null,
+  zoom = 13,
+  height = '400px',
+  driverLocation = null
+}) => {
   return (
-    <MapContainer
-      center={center}
-      zoom={zoom}
-      style={{ height, width: '100%' }}
-    >
+    <MapContainer center={center} zoom={zoom} style={{ height, width: '100%' }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
       />
+
+      <AutoFitBounds markers={markers} />
 
       {markers.map((marker, index) => (
         <Marker
@@ -75,4 +99,4 @@ const Map = ({
   );
 };
 
-export default Map; 
+export default Map;
