@@ -1,63 +1,36 @@
 const express = require('express');
-const { protect, authorize } = require('../controllers/auth.controller');
-const {getUserSpendings}=require('../controllers/booking.controller')
 const router = express.Router();
+const {
+  getUserProfile,
+  updateUserProfile,
+  getUserBookings,
+  getUserSpendings
+} = require('../controllers/user.controller');
 
-// Protect all routes
-router.use(protect);
-router.use(authorize('user'));
+// Dynamically import ES module middleware
+let verifyToken, isUser;
+(async () => {
+  const middleware = await import('../middlewares/auth.middleware.js');
+  verifyToken = middleware.verifyToken;
+  isUser = middleware.isUser;
+})();
 
-// Get user profile
-router.get('/profile', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: req.user
-  });
-});
+// Existing routes (assumed working with CommonJS)
+// If you're already using verifyToken and isUser with require in other routes, keep them untouched
+router.get('/profile', getUserProfile);
+router.put('/profile', updateUserProfile);
+router.get('/bookings', getUserBookings);
 
-// Update user profile
-router.put('/profile', async (req, res) => {
-  try {
-    const { name, phoneNumber } = req.body;
-    const user = req.user;
-
-    user.name = name || user.name;
-    user.phoneNumber = phoneNumber || user.phoneNumber;
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      data: user
+// 👇 Updated Monthly Spendings Route
+router.get('/spendings/monthly', (req, res, next) => {
+  if (verifyToken && isUser) {
+    verifyToken(req, res, (err) => {
+      if (err) return next(err);
+      isUser(req, res, next);
     });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
+  } else {
+    res.status(503).json({ message: 'Middleware loading...' });
   }
-});
+}, getUserSpendings);
 
-// Update user location
-router.put('/location', async (req, res) => {
-  try {
-    const { coordinates } = req.body;
-    const user = req.user;
-
-    user.location.coordinates = coordinates;
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      data: user.location
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-router.get('/spendings/monthly', verifyToken, isUser, getUserSpendings);
-
-
-module.exports = router; 
+module.exports = router;

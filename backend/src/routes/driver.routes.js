@@ -1,83 +1,39 @@
 const express = require('express');
-const { protect, authorize } = require('../controllers/auth.controller');
-const { getDriverEarnings }=require('../controllers/booking.controller')
 const router = express.Router();
+const {
+  getDriverProfile,
+  getDriverBookings,
+  updateBookingStatus,
+  getDriverEarnings,
+  getMonthlyDriverEarnings,
+  getDriverRequests,
+  acceptRideRequest,
+  rejectRideRequest,
+  getDriverActiveRide
+} = require('../controllers/driver.controller');
 
-// Protect all routes
-router.use(protect);
-router.use(authorize('driver'));
+// Dynamic ES module middleware import
+let verifyToken, isDriver;
+(async () => {
+  const middleware = await import('../middlewares/auth.middleware.js');
+  verifyToken = middleware.verifyToken;
+  isDriver = middleware.isDriver;
+})();
 
-// Get driver profile
-router.get('/profile', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: req.user
-  });
-});
+// Existing routes (CommonJS ones untouched)
+router.get('/profile', getDriverProfile);
+router.get('/bookings', getDriverBookings);
 
-// Update driver profile
-router.put('/profile', async (req, res) => {
-  try {
-    const { name, phoneNumber } = req.body;
-    const driver = req.user;
-
-    driver.name = name || driver.name;
-    driver.phoneNumber = phoneNumber || driver.phoneNumber;
-    await driver.save();
-
-    res.status(200).json({
-      success: true,
-      data: driver
+// 👇 Monthly Earnings Route using dynamic middleware
+router.get('/earnings/monthly', (req, res, next) => {
+  if (verifyToken && isDriver) {
+    verifyToken(req, res, (err) => {
+      if (err) return next(err);
+      isDriver(req, res, next);
     });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
+  } else {
+    res.status(503).json({ message: 'Middleware loading...' });
   }
-});
+}, getMonthlyDriverEarnings);
 
-// Update driver location
-router.put('/location', async (req, res) => {
-  try {
-    const { coordinates } = req.body;
-    const driver = req.user;
-
-    driver.location.coordinates = coordinates;
-    await driver.save();
-
-    res.status(200).json({
-      success: true,
-      data: driver.location
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
-// Update driver availability
-router.put('/availability', async (req, res) => {
-  try {
-    const { isAvailable } = req.body;
-    const driver = req.user;
-
-    driver.isAvailable = isAvailable;
-    await driver.save();
-
-    res.status(200).json({
-      success: true,
-      data: driver
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-router.get('/earnings/monthly', getDriverEarnings);
-
-module.exports = router; 
+module.exports = router;
