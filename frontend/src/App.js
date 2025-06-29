@@ -79,10 +79,8 @@ function App() {
           <Route path="/admin" element={<PrivateRoute role="admin"><Layout /></PrivateRoute>}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="bookings" element={<AdminBookings />} />
-            <Route path="bookings/completed" element={<AdminBookings bookingStatus="completed" />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="drivers" element={<AdminDrivers />} />
-            <Route path="bookings/active" element={<AdminActiveBookings />} />
           </Route>
 
         </Routes>
