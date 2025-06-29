@@ -1,7 +1,7 @@
 // pages/DriverEarnings.jsx
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, CircularProgress } from '@mui/material';
-import { fetchMonthlyEarnings } from '../services/bookingService';
+import { fetchMonthlyEarnings } from '../../services/bookingService';
 
 const DriverEarnings = () => {
   const [earnings, setEarnings] = useState(null);

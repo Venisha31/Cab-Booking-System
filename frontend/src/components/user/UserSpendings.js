@@ -1,7 +1,7 @@
 // pages/UserSpendings.jsx
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, CircularProgress } from '@mui/material';
-import { fetchMonthlySpendings } from '../services/bookingService';
+import { fetchMonthlySpendings } from '../../services/bookingService.js';
 
 const UserSpendings = () => {
   const [spendings, setSpendings] = useState(null);
