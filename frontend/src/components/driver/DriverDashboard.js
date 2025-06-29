@@ -97,6 +97,20 @@ const DriverDashboard = () => {
             sx={{
               mb: 2,
               cursor: 'pointer',
+              color: selectedTab === 'earnings' ? '#00c6ff' : '#fff',
+              '&:hover': { color: '#fbc02d' },
+            }}
+            onClick={() => navigate('/driver/earnings')}
+          >
+            💰 My Earnings
+          </Typography>
+
+
+
+          <Typography
+            sx={{
+              mb: 2,
+              cursor: 'pointer',
               color: selectedTab === 'profile' ? '#00c6ff' : '#fff',
               '&:hover': { color: '#fbc02d' },
             }}

@@ -420,3 +420,39 @@ exports.rejectRideRequest = async (req, res) => {
     });
   }
 };
+export const getDriverEarnings = async (req, res) => {
+  try {
+    const driverId = req.user.id;  // Ensure your middleware sets `req.user`
+    const start = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const end = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+    const bookings = await Booking.find({
+      driver: driverId,
+      status: 'completed',
+      createdAt: { $gte: start, $lte: end },
+    });
+
+    const totalEarnings = bookings.reduce((sum, ride) => sum + ride.fare, 0);
+    res.json({ totalEarnings });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to calculate driver earnings' });
+  }
+};
+export const getUserSpendings = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+    const rides = await Booking.find({
+      user: userId,
+      status: 'completed',
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
+    const totalSpent = rides.reduce((sum, ride) => sum + ride.fare, 0);
+    res.json({ totalSpent });
+  } catch (err) {
+    res.status(500).json({ error: 'Error calculating spendings' });
+  }
+};

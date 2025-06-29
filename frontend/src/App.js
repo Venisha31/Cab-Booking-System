@@ -15,11 +15,13 @@ import BookRide from './components/user/BookRide';
 import MyBookings from './components/user/MyBookings';
 import PastRides from './components/user/PastRides';
 import UserProfile from './components/user/UserProfile';
+import UserSpendings from './components/user/UserSpendings';
 
 // Driver Components
 import DriverDashboard from './components/driver/DriverDashboard';
 import RideRequests from './components/driver/RideRequests';
 import DriverBookings from './components/driver/DriverBookings'
+import DriverEarnings from './components/driver/DriverEarnings';
 
 // Admin Components
 import AdminDashboard from './components/Admin/AdminDashboard';
@@ -66,6 +68,7 @@ function App() {
             <Route path="my-bookings" element={<MyBookings />} />
             <Route path="past-rides" element={<PastRides />} />
             <Route path="profile" element={<UserProfile />} />
+            <Route path="/user/spendings" element={<UserSpendings />} />
           </Route>
 
 
@@ -74,6 +77,7 @@ function App() {
             <Route path="dashboard" element={<DriverDashboard />} />
             <Route path="ride-requests" element={<RideRequests />} />
             <Route path="my-rides" element={<DriverBookings />} />
+            <Route path="/driver/earnings" element={<DriverEarnings />} />
           </Route>
 
           {/* Admin Protected Routes */}

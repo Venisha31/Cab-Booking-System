@@ -70,3 +70,12 @@ export const updateBookingStatus = async (bookingId, status) => {
     throw new Error(error.response?.data?.message || 'Failed to update booking status');
   }
 }; 
+export const fetchMonthlyEarnings = async () => {
+  const res = await api.get('/api/driver/earnings/monthly');
+  return res.data.data;
+};
+
+export const fetchMonthlySpendings = async () => {
+  const res = await api.get('/api/user/spendings/monthly');
+  return res.data.data;
+};

@@ -1,5 +1,6 @@
 const express = require('express');
 const { protect, authorize } = require('../controllers/auth.controller');
+const {getUserSpendings}=require('../controllers/booking.controller')
 const router = express.Router();
 
 // Protect all routes
@@ -56,5 +57,7 @@ router.put('/location', async (req, res) => {
     });
   }
 });
+router.get('/spendings/monthly', verifyToken, isUser, getUserSpendings);
+
 
 module.exports = router; 

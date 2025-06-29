@@ -1,5 +1,6 @@
 const express = require('express');
 const { protect, authorize } = require('../controllers/auth.controller');
+const { getDriverEarnings }=require('../controllers/booking.controller')
 const router = express.Router();
 
 // Protect all routes
@@ -77,5 +78,6 @@ router.put('/availability', async (req, res) => {
     });
   }
 });
+router.get('/earnings/monthly', getDriverEarnings);
 
 module.exports = router; 

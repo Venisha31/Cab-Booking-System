@@ -78,6 +78,7 @@ const UserDashboard = () => {
             { label: '📘 MY BOOKINGS', path: '/user/my-bookings' },
             { label: '🔁 PAST RIDES', path: '/user/past-rides' },
             { label: '🔁 My Profile', path: '/user/Userprofile' },
+            { label: '💸 MY SPENDINGS', path: '/user/spendings' }
           ].map((item) => (
             <Typography
               key={item.path}

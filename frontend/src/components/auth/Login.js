@@ -72,21 +72,28 @@ const Login = () => {
           />
 
           <Button
-            variant="contained"
-            fullWidth
-            onClick={handleLogin}
-            sx={{
-              mt: 3,
-              bgcolor: 'rgb(254, 184, 0)',
-              color: '#000',
-              fontWeight: 'bold',
-              '&:hover': {
-                bgcolor: 'rgb(230, 165, 0)',
-              },
-            }}
-          >
-            Login
-          </Button>
+  variant="contained"
+  fullWidth
+  onClick={handleLogin}
+  sx={{
+    mt: 3,
+    bgcolor: 'rgb(254, 184, 0)',
+    color: '#000',
+    fontWeight: 'bold',
+    '&:hover': {
+      bgcolor: 'rgb(230, 165, 0)', // Slightly darker yellow on hover
+    },
+    '&:focus': {
+      bgcolor: 'rgb(230, 165, 0)',
+    },
+    '&:active': {
+      bgcolor: 'rgb(210, 150, 0)',
+    },
+  }}
+>
+  Login
+</Button>
+
 
           <Typography variant="body2" mt={2} textAlign="center">
             Don’t have an account?{' '}
