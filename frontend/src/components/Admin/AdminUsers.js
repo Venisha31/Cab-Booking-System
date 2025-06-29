@@ -12,15 +12,16 @@ import {
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
-  const token = localStorage.getItem('token'); // ✅ Safely get stored token
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const storedToken = token || localStorage.getItem('token');
     if (!storedToken) return;
 
-    axios.get('/api/admin/users', {
-      headers: { Authorization: `Bearer ${storedToken}` }
-    })
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/api/admin/users`, {
+        headers: { Authorization: `Bearer ${storedToken}` },
+      })
       .then((res) => {
         console.log('Users Response:', res.data);
         setUsers(res.data);
@@ -29,7 +30,6 @@ const AdminUsers = () => {
         console.error('Error fetching users:', err);
       });
   }, [token]);
-
 
   return (
     <TableContainer component={Paper}>
