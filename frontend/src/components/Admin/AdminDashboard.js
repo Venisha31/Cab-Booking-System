@@ -35,7 +35,7 @@ const AdminDashboard = () => {
     const loadStats = async () => {
       try {
         const res = await fetchStats(token);
-         console.log("📦 Dashboard Stats:", res.data);
+        console.log("📦 Dashboard Stats:", res.data);
         setStats(res.data);
       } catch (err) {
         console.error('Error fetching admin stats:', err);
@@ -79,11 +79,13 @@ const AdminDashboard = () => {
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <StatCard
-            title="Pending Bookings"
-            value={stats.pendingBookings}
-            onClick={() => navigate('/admin/bookings?status=pending')} // ✅ Navigate with query
-          />
+          <Grid item xs={12} sm={6} md={4}>
+            <StatCard
+              title="Cancelled Bookings"
+              value={stats.cancelledBookings}
+              onClick={() => navigate('/admin/bookings?status=cancelled')}
+            />
+          </Grid>
         </Grid>
 
       </Grid>

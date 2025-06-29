@@ -10,7 +10,7 @@ export const getAdminStats = async (req, res) => {
       status: { $regex: '^driver_assigned$', $options: 'i' }  // case-insensitive match
     });
     const completedBookings = await Booking.countDocuments({ status: 'completed' });
-    const pendingBookings = await Booking.countDocuments({ status: 'pending' });
+    const pendingBookings = await Booking.countDocuments({ status: 'cancelled' });
     console.log("DEBUG Active Cabs:", activeCabs);
 
 
@@ -20,7 +20,7 @@ export const getAdminStats = async (req, res) => {
       totalBookings,
       activeCabs,
       completedBookings,
-      pendingBookings,
+      cancelledBookings,
     });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Error fetching admin stats', error: err.message });
@@ -92,4 +92,20 @@ export const getActiveBookings = async (req, res) => {
     });
   }
 };
+export const getCancelledBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ status: 'cancelled' })
+      .populate('user', 'name email')
+      .populate('driver', 'name email');
+
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch cancelled bookings',
+      error: err.message
+    });
+  }
+};
+
 

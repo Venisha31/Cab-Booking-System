@@ -27,6 +27,7 @@ import AdminBookings from './components/Admin/AdminBookings';
 import AdminUsers from './components/Admin/AdminUsers';
 import AdminDrivers from './components/Admin/AdminDrivers';
 import AdminActiveBookings from './components/Admin/AdminActiveBookings';
+import AdminCancelledBookings from './components/Admin/AdmincancelledBookings';
 
 // Shared Components
 import PrivateRoute from './components/shared/PrivateRoute';
@@ -79,6 +80,8 @@ function App() {
           <Route path="/admin" element={<PrivateRoute role="admin"><Layout /></PrivateRoute>}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="bookings" element={<AdminBookings />} />
+            <Route path="bookings/active" element={<AdminActiveBookings />} />
+            <Route path="bookings/cancelled" element={<AdminCancelledBookings />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="drivers" element={<AdminDrivers />} />
           </Route>
