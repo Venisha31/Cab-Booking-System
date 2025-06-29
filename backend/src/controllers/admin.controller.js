@@ -10,7 +10,7 @@ export const getAdminStats = async (req, res) => {
       status: { $regex: '^driver_assigned$', $options: 'i' }  // case-insensitive match
     });
     const completedBookings = await Booking.countDocuments({ status: 'completed' });
-    const pendingBookings = await Booking.countDocuments({ status: 'cancelled' });
+    const cancelledBookings = await Booking.countDocuments({ status: 'cancelled' });
     console.log("DEBUG Active Cabs:", activeCabs);
 
 
