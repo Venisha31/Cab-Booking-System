@@ -21,7 +21,7 @@ const Login = () => {
       } else if (loggedInUser.role === 'driver') {
         navigate('/driver/dashboard');
       } else if (loggedInUser.role === 'admin') {
-        navigate('/Admin/dashboard'); // ✅ make sure this route exists
+        navigate('/admin/dashboard'); // fixed case: /admin (not /Admin)
       } else {
         alert('Invalid role');
       }
@@ -49,13 +49,9 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             sx={{
-              '& label.Mui-focused': {
-                color: 'black',
-              },
+              '& label.Mui-focused': { color: 'black' },
               '& .MuiOutlinedInput-root': {
-                '&.Mui-focused fieldset': {
-                  borderColor: 'black',
-                },
+                '&.Mui-focused fieldset': { borderColor: 'black' },
               },
             }}
           />
@@ -68,13 +64,9 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             sx={{
-              '& label.Mui-focused': {
-                color: 'black',
-              },
+              '& label.Mui-focused': { color: 'black' },
               '& .MuiOutlinedInput-root': {
-                '&.Mui-focused fieldset': {
-                  borderColor: 'black',
-                },
+                '&.Mui-focused fieldset': { borderColor: 'black' },
               },
             }}
           />
@@ -82,8 +74,16 @@ const Login = () => {
           <Button
             variant="contained"
             fullWidth
-            sx={{ mt: 3, bgcolor: '#feb800', color: '#000', fontWeight: 'bold' }}
             onClick={handleLogin}
+            sx={{
+              mt: 3,
+              bgcolor: 'rgb(254, 184, 0)',
+              color: '#000',
+              fontWeight: 'bold',
+              '&:hover': {
+                bgcolor: 'rgb(230, 165, 0)',
+              },
+            }}
           >
             Login
           </Button>
@@ -93,7 +93,15 @@ const Login = () => {
             <Button
               variant="text"
               onClick={() => navigate('/register')}
-              sx={{ color: '#feb800', textTransform: 'none', fontWeight: 'bold' }}
+              sx={{
+                color: 'rgb(254, 184, 0)',
+                fontWeight: 'bold',
+                textTransform: 'none',
+                '&:hover': {
+                  color: 'rgb(230, 165, 0)',
+                  backgroundColor: 'transparent',
+                },
+              }}
             >
               Register
             </Button>
@@ -116,7 +124,7 @@ const Login = () => {
       >
         <img
           src={loginImage}
-          alt="Register Visual"
+          alt="Login Visual"
           style={{
             width: '90%',
             height: 'auto',

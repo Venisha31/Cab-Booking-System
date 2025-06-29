@@ -1,7 +1,7 @@
 import { Box, Button, Container, Typography, AppBar, Toolbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import heroCar from '../../assets/hero-car.png'; // your image
+import heroCar from '../../assets/hero-car.png';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const HomePage = () => {
     <>
       {/* Header */}
       <AppBar position="static" sx={{ bgcolor: '#000', boxShadow: 'none' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: 4 }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
           <Typography variant="h5" fontWeight="bold" sx={{ color: '#fff' }}>
             CabXpress
           </Typography>
@@ -31,7 +31,15 @@ const HomePage = () => {
       </AppBar>
 
       {/* Hero Section */}
-      <Box sx={{ display: 'flex', minHeight: '90vh', bgcolor: '#000', color: '#fff' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          minHeight: '90vh',
+          bgcolor: '#000',
+          color: '#fff',
+        }}
+      >
         {/* Left Content */}
         <Container
           maxWidth="md"
@@ -39,8 +47,10 @@ const HomePage = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            zIndex: 2,
+            alignItems: { xs: 'center', md: 'flex-start' },
+            textAlign: { xs: 'center', md: 'left' },
             px: { xs: 3, md: 10 },
+            py: { xs: 6, md: 0 },
           }}
         >
           <motion.div
@@ -48,10 +58,19 @@ const HomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <Typography variant="h3" fontWeight="bold" mb={2}>
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              mb={2}
+              sx={{ fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}
+            >
               Book Your Ride. Anytime. Anywhere.
             </Typography>
-            <Typography variant="h6" mb={4} color="#ccc">
+            <Typography
+              variant="h6"
+              mb={4}
+              sx={{ color: '#ccc', fontSize: { xs: '1rem', md: '1.25rem' } }}
+            >
               Safe, Fast and Reliable Cab Service.
             </Typography>
             <Button
@@ -64,6 +83,9 @@ const HomePage = () => {
                 px: 4,
                 py: 1.5,
                 borderRadius: 2,
+                '&:hover': {
+                  bgcolor: '#e6a900',
+                },
               }}
             >
               Book Now
@@ -71,17 +93,21 @@ const HomePage = () => {
           </motion.div>
         </Container>
 
-        {/* Right Side Illustration */}
+        {/* Right Image */}
         <Box
           sx={{
-            width: '50%',
+            width: { xs: '100%', md: '50%' },
             backgroundColor: '#feb800',
-            clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)',
+            clipPath: {
+              xs: 'none',
+              md: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)',
+            },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
             overflow: 'hidden',
+            py: { xs: 4, md: 0 },
           }}
         >
           <motion.img
