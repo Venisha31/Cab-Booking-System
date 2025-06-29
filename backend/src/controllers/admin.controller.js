@@ -6,7 +6,7 @@ export const getAdminStats = async (req, res) => {
     const totalUsers = await User.countDocuments({ role: 'user' });
     const totalDrivers = await User.countDocuments({ role: 'driver' });
     const totalBookings = await Booking.countDocuments();
-    const activeCabs = await User.countDocuments({ role: 'driver', isAvailable: true });
+    const activeCabs = await Booking.countDocuments({ status: 'driver_assigned' });
     const completedBookings = await Booking.countDocuments({ status: 'completed' });
     const pendingBookings = await Booking.countDocuments({ status: 'pending' });
 
@@ -69,6 +69,21 @@ export const getAllBookings = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch bookings',
+      error: err.message
+    });
+  }
+};
+export const getActiveBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ status: 'driver_assigned' })
+      .populate('user', 'name email')
+      .populate('driver', 'name email');
+
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch active bookings',
       error: err.message
     });
   }

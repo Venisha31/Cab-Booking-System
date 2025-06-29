@@ -16,5 +16,6 @@ router.get('/users', verifyToken, isAdmin, getAllUsers);
 router.get('/drivers', verifyToken, isAdmin, getAllDrivers);
 router.put('/drivers/:id/status', verifyToken, isAdmin, updateDriverStatus);
 router.get('/bookings', verifyToken, isAdmin, getAllBookings);
+router.get('/bookings/active', getActiveBookings);
 
 module.exports = router;
