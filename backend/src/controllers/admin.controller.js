@@ -6,7 +6,9 @@ export const getAdminStats = async (req, res) => {
     const totalUsers = await User.countDocuments({ role: 'user' });
     const totalDrivers = await User.countDocuments({ role: 'driver' });
     const totalBookings = await Booking.countDocuments();
-    const activeCabs = await Booking.countDocuments({ status: 'driver_assigned' });
+    const activeCabs = await Booking.countDocuments({
+      status: { $regex: '^driver_assigned$', $options: 'i' }  // case-insensitive match
+    });
     const completedBookings = await Booking.countDocuments({ status: 'completed' });
     const pendingBookings = await Booking.countDocuments({ status: 'pending' });
     console.log("DEBUG Active Cabs:", activeCabs);
