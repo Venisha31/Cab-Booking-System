@@ -1,22 +1,12 @@
-import Nominatim from 'nominatim-geocoder';
-import * as turf from '@turf/turf';
 import axios from 'axios';
+import * as turf from '@turf/turf';
 import api from './api';
 
-const geocoder = new Nominatim();
+const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org';
 
 // Cache for pickup points with expiration
 const pickupPointsCache = new Map();
 const CACHE_EXPIRY = 30 * 60 * 1000; // 30 minutes
-
-// Debounce function
-const debounce = (func, wait) => {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-};
 
 // Function to check if cache is valid
 const isCacheValid = (cacheEntry) => {
@@ -24,7 +14,7 @@ const isCacheValid = (cacheEntry) => {
   return (Date.now() - cacheEntry.timestamp) < CACHE_EXPIRY;
 };
 
-// Function to format address parts
+// Format address nicely
 const formatAddress = (address) => {
   const parts = [];
   if (address.road) parts.push(address.road);
@@ -36,15 +26,20 @@ const formatAddress = (address) => {
   return parts.join(', ');
 };
 
+// ✅ Updated: Search locations via secure HTTPS
 export const searchLocations = async (query) => {
   try {
-    const results = await geocoder.search({ 
-      q: query, 
-      countrycodes: 'in',
-      addressdetails: 1,
-      limit: 10
+    const { data } = await axios.get(`${NOMINATIM_BASE_URL}/search`, {
+      params: {
+        q: query,
+        countrycodes: 'in',
+        addressdetails: 1,
+        format: 'json',
+        limit: 10
+      }
     });
-    return results.map(result => ({
+
+    return data.map(result => ({
       id: result.place_id,
       name: result.display_name.split(',')[0],
       fullAddress: formatAddress(result.address),
@@ -59,28 +54,33 @@ export const searchLocations = async (query) => {
   }
 };
 
+// ✅ Distance calculator
 export const calculateDistance = (point1, point2) => {
   try {
     const from = turf.point([point1[1], point1[0]]);
     const to = turf.point([point2[1], point2[0]]);
     const distance = turf.distance(from, to);
-    return Math.round(distance * 10) / 10; // Round to 1 decimal place
+    return Math.round(distance * 10) / 10;
   } catch (error) {
     console.error('Error calculating distance:', error);
     return 0;
   }
 };
 
-// Function to search for specific location type with better address formatting
+// ✅ Updated: Search specific types of locations securely
 const searchLocationByType = async (cityName, type, limit = 2) => {
   try {
-    const response = await geocoder.search({
-      q: `${cityName} ${type}`,
-      countrycodes: 'in',
-      addressdetails: 1,
-      limit
+    const { data } = await axios.get(`${NOMINATIM_BASE_URL}/search`, {
+      params: {
+        q: `${cityName} ${type}`,
+        countrycodes: 'in',
+        addressdetails: 1,
+        format: 'json',
+        limit
+      }
     });
-    return response.map(place => ({
+
+    return data.map(place => ({
       id: place.place_id,
       name: place.display_name.split(',')[0],
       fullAddress: formatAddress(place.address),
@@ -94,12 +94,11 @@ const searchLocationByType = async (cityName, type, limit = 2) => {
   }
 };
 
+// ✅ Main pickup point generator (updated to use HTTPS)
 export const getPickupPoints = async (city) => {
   try {
-    // Extract city name without state/country
     const cityName = city.split(',')[0].trim();
-    
-    // Check cache first
+
     const cacheEntry = pickupPointsCache.get(cityName);
     if (isCacheValid(cacheEntry)) {
       console.log('Returning cached pickup points for:', cityName);
@@ -108,7 +107,6 @@ export const getPickupPoints = async (city) => {
 
     console.log('Fetching pickup points for:', cityName);
 
-    // Define location types to search for
     const locationTypes = [
       { type: 'railway station', limit: 2 },
       { type: 'bus station', limit: 2 },
@@ -118,40 +116,31 @@ export const getPickupPoints = async (city) => {
       { type: 'landmark', limit: 3 }
     ];
 
-    // Search for all location types in parallel with a small delay between batches
     const results = [];
     const batchSize = 2;
-    
+
     for (let i = 0; i < locationTypes.length; i += batchSize) {
       const batch = locationTypes.slice(i, i + batchSize);
-      const batchPromises = batch.map(({ type, limit }) => 
+      const batchPromises = batch.map(({ type, limit }) =>
         searchLocationByType(cityName, type, limit)
       );
-      
+
       const batchResults = await Promise.all(batchPromises);
       results.push(...batchResults);
-      
-      // Add a small delay between batches to prevent rate limiting
+
       if (i + batchSize < locationTypes.length) {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
 
-    // Combine all results and remove duplicates
     const allPoints = results.flat();
-    const uniquePoints = Array.from(
-      new Map(
-        allPoints.map(point => [point.id, point])
-      ).values()
-    );
+    const uniquePoints = Array.from(new Map(allPoints.map(p => [p.id, p])).values());
 
-    // Sort by importance and limit results
     const formattedPoints = uniquePoints
       .sort((a, b) => b.distance - a.distance)
-      .slice(0, 12); // Keep top 12 points
+      .slice(0, 12);
 
     if (formattedPoints.length > 0) {
-      // Cache the results with timestamp
       pickupPointsCache.set(cityName, {
         data: formattedPoints,
         timestamp: Date.now()
@@ -159,7 +148,6 @@ export const getPickupPoints = async (city) => {
       return formattedPoints;
     }
 
-    // Fallback to default points if no results found
     const defaultPoints = [
       {
         id: 'railway_station',
@@ -187,11 +175,11 @@ export const getPickupPoints = async (city) => {
       }
     ];
 
-    // Cache the default points
     pickupPointsCache.set(cityName, {
       data: defaultPoints,
       timestamp: Date.now()
     });
+
     return defaultPoints;
   } catch (error) {
     console.error('Error getting pickup points:', error);
@@ -199,21 +187,18 @@ export const getPickupPoints = async (city) => {
   }
 };
 
+// ✅ Nearest driver API call
 export const findNearestDriver = async (pickupCoordinates) => {
   try {
     const response = await api.post('/api/bookings/find-driver', {
       pickupCoordinates
     });
-    
+
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.message || 'No drivers available');
     }
 
     const driver = response.data.data;
-    if (!driver) {
-      throw new Error('No drivers available at the moment. Please try again later.');
-    }
-
     return {
       id: driver._id,
       name: driver.name,
@@ -225,10 +210,10 @@ export const findNearestDriver = async (pickupCoordinates) => {
       },
       rating: driver.rating || 4.0,
       coordinates: driver.location.coordinates,
-      estimatedArrival: Math.floor(Math.random() * 10) + 5 // 5-15 minutes
+      estimatedArrival: Math.floor(Math.random() * 10) + 5
     };
   } catch (error) {
     console.error('Error finding driver:', error);
     throw new Error(error.response?.data?.message || 'No drivers available at the moment. Please try again later.');
   }
-}; 
+};
