@@ -63,7 +63,12 @@ const AdminDashboard = () => {
           <StatCard title="Total Bookings" value={stats.totalBookings} onClick={() => navigate('/admin/bookings')} />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <StatCard title="Active Cabs" value={stats.activeCabs} />
+          <StatCard
+            title="Active Cabs"
+            value={stats.activeCabs}
+            onClick={() => navigate('/admin/bookings?status=driver_assigned')}
+          />
+
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <StatCard
