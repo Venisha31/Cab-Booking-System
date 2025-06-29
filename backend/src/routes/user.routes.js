@@ -1,13 +1,18 @@
 const express = require('express');
 const router = express.Router();
+
+// Import only existing functions
+const {
+  getUserBookings,
+  getUserSpendings,
+} = require('../controllers/booking.controller');
+
 const {
   getUserProfile,
   updateUserProfile,
-  getUserBookings,
-  getUserSpendings
-} = require('../controllers/booking.controller.js');
+} = require('../controllers/user.controller');
 
-// Dynamically import ES module middleware
+// Middleware (dynamic ES module loader)
 let verifyToken, isUser;
 (async () => {
   const middleware = await import('../middlewares/auth.middleware.js');
@@ -15,22 +20,25 @@ let verifyToken, isUser;
   isUser = middleware.isUser;
 })();
 
-// Existing routes (assumed working with CommonJS)
-// If you're already using verifyToken and isUser with require in other routes, keep them untouched
+// Routes
 router.get('/profile', getUserProfile);
 router.put('/profile', updateUserProfile);
 router.get('/bookings', getUserBookings);
 
-// 👇 Updated Monthly Spendings Route
-router.get('/spendings/monthly', (req, res, next) => {
-  if (verifyToken && isUser) {
-    verifyToken(req, res, (err) => {
-      if (err) return next(err);
-      isUser(req, res, next);
-    });
-  } else {
-    res.status(503).json({ message: 'Middleware loading...' });
-  }
-}, getUserSpendings);
+// Monthly Spendings (with async middleware check)
+router.get(
+  '/spendings/monthly',
+  (req, res, next) => {
+    if (verifyToken && isUser) {
+      verifyToken(req, res, (err) => {
+        if (err) return next(err);
+        isUser(req, res, next);
+      });
+    } else {
+      res.status(503).json({ message: 'Middleware loading...' });
+    }
+  },
+  getUserSpendings
+);
 
 module.exports = router;
