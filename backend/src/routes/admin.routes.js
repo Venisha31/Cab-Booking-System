@@ -7,6 +7,7 @@ const {
   getAllDrivers,
   updateDriverStatus,
   getAllBookings,
+  getActiveBookings,
 } = require('../controllers/admin.controller');
 
 const router = express.Router();
@@ -16,6 +17,7 @@ router.get('/users', verifyToken, isAdmin, getAllUsers);
 router.get('/drivers', verifyToken, isAdmin, getAllDrivers);
 router.put('/drivers/:id/status', verifyToken, isAdmin, updateDriverStatus);
 router.get('/bookings', verifyToken, isAdmin, getAllBookings);
-router.get('/bookings/active', getActiveBookings);
+router.get('/bookings/active', verifyToken, isAdmin, getActiveBookings); // ✅ secure and correct
+
 
 module.exports = router;
