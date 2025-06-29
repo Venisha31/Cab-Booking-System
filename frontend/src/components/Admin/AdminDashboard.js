@@ -35,6 +35,7 @@ const AdminDashboard = () => {
     const loadStats = async () => {
       try {
         const res = await fetchStats(token);
+         console.log("📦 Dashboard Stats:", res.data);
         setStats(res.data);
       } catch (err) {
         console.error('Error fetching admin stats:', err);

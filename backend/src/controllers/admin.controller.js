@@ -9,6 +9,8 @@ export const getAdminStats = async (req, res) => {
     const activeCabs = await Booking.countDocuments({ status: 'driver_assigned' });
     const completedBookings = await Booking.countDocuments({ status: 'completed' });
     const pendingBookings = await Booking.countDocuments({ status: 'pending' });
+    console.log("DEBUG Active Cabs:", activeCabs);
+
 
     res.json({
       totalUsers,
