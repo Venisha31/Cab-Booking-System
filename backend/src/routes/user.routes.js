@@ -15,7 +15,7 @@ const {
 // Middleware (dynamic ES module loader)
 let verifyToken, isUser;
 (async () => {
-  const middleware = await import('../middlewares/auth.middleware.js');
+  const middleware = await import('../middlewares/auth.js');
   verifyToken = middleware.verifyToken;
   isUser = middleware.isUser;
 })();
