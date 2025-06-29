@@ -11,7 +11,7 @@ const AdminDrivers = () => {
   useEffect(() => {
     if (!token) return; // Wait until token is ready
 
-    axios.get(`${process.env.REACT_APP_API_URL}/api/admin/users`, {
+    axios.get(`${process.env.REACT_APP_API_URL}/api/admin/drivers`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then((res) => {
