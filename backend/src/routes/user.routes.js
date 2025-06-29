@@ -5,7 +5,7 @@ const {
   updateUserProfile,
   getUserBookings,
   getUserSpendings
-} = require('../controllers/user.controller');
+} = require('../controllers/booking.controller.js');
 
 // Dynamically import ES module middleware
 let verifyToken, isUser;

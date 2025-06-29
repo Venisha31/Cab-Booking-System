@@ -10,7 +10,7 @@ const {
   acceptRideRequest,
   rejectRideRequest,
   getDriverActiveRide
-} = require('../controllers/driver.controller');
+} = require('../controllers/booking.controller.js');
 
 // Dynamic ES module middleware import
 let verifyToken, isDriver;
