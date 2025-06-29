@@ -79,15 +79,12 @@ const AdminDashboard = () => {
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <Grid item xs={12} sm={6} md={4}>
-            <StatCard
-              title="Cancelled Bookings"
-              value={stats.cancelledBookings}
-              onClick={() => navigate('/admin/bookings?status=cancelled')}
-            />
-          </Grid>
+          <StatCard
+            title="Cancelled Bookings"
+            value={stats.cancelledBookings}
+            onClick={() => navigate('/admin/bookings?status=cancelled')}
+          />
         </Grid>
-
       </Grid>
     </Box>
   );
