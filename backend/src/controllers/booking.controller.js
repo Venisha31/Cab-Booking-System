@@ -420,9 +420,10 @@ exports.rejectRideRequest = async (req, res) => {
     });
   }
 };
-export const getDriverEarnings = async (req, res) => {
+// Monthly driver earnings (for Driver Dashboard)
+const getMonthlyDriverEarnings = async (req, res) => {
   try {
-    const driverId = req.user.id;  // Ensure your middleware sets `req.user`
+    const driverId = req.user.id;
     const start = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
     const end = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
@@ -433,26 +434,43 @@ export const getDriverEarnings = async (req, res) => {
     });
 
     const totalEarnings = bookings.reduce((sum, ride) => sum + ride.fare, 0);
-    res.json({ totalEarnings });
+    res.status(200).json({ totalEarnings });
   } catch (err) {
     res.status(500).json({ error: 'Failed to calculate driver earnings' });
   }
 };
-export const getUserSpendings = async (req, res) => {
+
+// Monthly user spendings (for User Dashboard)
+const getUserSpendings = async (req, res) => {
   try {
     const userId = req.user.id;
-    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+    const start = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const end = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
     const rides = await Booking.find({
       user: userId,
       status: 'completed',
-      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+      createdAt: { $gte: start, $lte: end },
     });
 
     const totalSpent = rides.reduce((sum, ride) => sum + ride.fare, 0);
-    res.json({ totalSpent });
+    res.status(200).json({ totalSpent });
   } catch (err) {
     res.status(500).json({ error: 'Error calculating spendings' });
   }
 };
+module.exports = {
+  createBooking: exports.createBooking,
+  getUserBookings: exports.getUserBookings,
+  getDriverBookings: exports.getDriverBookings,
+  updateBookingStatus: exports.updateBookingStatus,
+  getDriverEarnings: exports.getDriverEarnings,
+  getMonthlyDriverEarnings,
+  getUserSpendings,
+  findNearestDriver: exports.findNearestDriver,
+  getDriverActiveRide: exports.getDriverActiveRide,
+  getDriverRequests: exports.getDriverRequests,
+  acceptRideRequest: exports.acceptRideRequest,
+  rejectRideRequest: exports.rejectRideRequest,
+};
+
